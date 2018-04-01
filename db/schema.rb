@@ -10,10 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180303080917) do
+ActiveRecord::Schema.define(version: 20180401091034) do
+
+  create_table "consent_categories", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "mandatory", default: true
+  end
+
+  create_table "consents", force: :cascade do |t|
+    t.integer "consent_category_id"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["consent_category_id"], name: "index_consents_on_consent_category_id"
+  end
+
+  create_table "user_consents", force: :cascade do |t|
+    t.integer "consent_category_id"
+    t.datetime "agreed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["consent_category_id"], name: "index_user_consents_on_consent_category_id"
+  end
 
   create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -27,8 +49,11 @@ ActiveRecord::Schema.define(version: 20180303080917) do
     t.string "last_sign_in_ip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.string "username"
+    t.string "encrypted_email"
+    t.string "encrypted_email_iv"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
 end
