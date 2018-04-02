@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180402104437) do
+ActiveRecord::Schema.define(version: 20180402174744) do
 
   create_table "consent_categories", force: :cascade do |t|
     t.string "name"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20180402104437) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.boolean "requires_revalidation", default: false
     t.index ["consent_category_id"], name: "index_user_consents_on_consent_category_id"
     t.index ["user_id"], name: "index_user_consents_on_user_id"
   end

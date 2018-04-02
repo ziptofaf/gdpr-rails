@@ -9,6 +9,7 @@ class User < ApplicationRecord
   before_create :create_encryption_key
   after_create :save_encryption_key
   attr_encrypted :email, key: :encryption_key
+  has_many :user_consents
 
   #entry point for exporting user's personal information
   def self.export_personal_information(user_id)
