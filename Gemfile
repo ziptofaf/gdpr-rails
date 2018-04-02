@@ -27,8 +27,10 @@ gem 'coffee-rails', '~> 4.2'
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
-# Use Redis adapter to run Action Cable in production
+# Use Redis adapter to provide us with a storage of encryption keys
 gem 'redis', '~> 3.0'
+# You generally also use Redis for other tasks so we will use namespacing to hold just the keys
+gem 'redis-namespace'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
