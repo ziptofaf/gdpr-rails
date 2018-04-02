@@ -5,16 +5,24 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable
 
-  def self.export_personal_information(user_id)
-    user = User.find(user_id)
-    {user: user.to_json} if user
-  end
   before_validation :populate_iv_fields, :downcase_email
   before_create :create_encryption_key
   after_create :save_encryption_key
 
 
   attr_encrypted :email, key: :encryption_key
+
+  def self.export_personal_information(user_id)
+    descendants = ApplicationRecord.descendants.reject{|model| !model.has_personal_information?}
+    result = Hash.new
+    descendants.each do |descendant|
+      result[descendant.class.name] = descendant.export_personal_information(user_id)
+    end
+    user = User.find(user_id)
+    result['user'] = user.to_json if user
+    return result
+  end
+  
 
   #unfortunately not having an email field that you can just "write to" breaks
   #Devise. Below some necessary workarounds
