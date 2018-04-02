@@ -8,21 +8,27 @@ class User < ApplicationRecord
   before_validation :populate_iv_fields, :downcase_email
   before_create :create_encryption_key
   after_create :save_encryption_key
-
-
   attr_encrypted :email, key: :encryption_key
 
+  #entry point for exporting user's personal information
   def self.export_personal_information(user_id)
+    return nil unless User.exists?(user_id)
     descendants = ApplicationRecord.descendants.reject{|model| !model.has_personal_information?}
     result = Hash.new
+    p descendants
     descendants.each do |descendant|
-      result[descendant.class.name] = descendant.export_personal_information(user_id)
+      result[descendant.name] = descendant.export_personal_information_from_model(user_id)
     end
-    user = User.find(user_id)
-    result['user'] = user.to_json if user
     return result
   end
-  
+  #simplest example, we just export to json
+  def self.export_personal_information_from_model(user_id)
+    return User.find(user_id).to_json
+  end
+  #overwrite this to true for methods that you will want to be included in export_personal_information
+  def self.has_personal_information?
+    true
+  end
 
   #unfortunately not having an email field that you can just "write to" breaks
   #Devise. Below some necessary workarounds
@@ -67,8 +73,9 @@ class User < ApplicationRecord
     records = Array(self.class.find_by_email(self.email))
     records.reject{|u| self.persisted? && u.id == self.id}.empty?
   end
-
-  def self.find_by_email(email) #unfortunately, this is an O(n) operation now that has to go through ALL the users to see if an email is unique. Sorry!
+  #unfortunately, this is an O(n) operation now that has to go through ALL the users to see if an email is unique. Sorry!
+  #if you need it to ne O(1) then consider using email_hash field instead
+  def self.find_by_email(email)
     users = User.all
     users.each do |user|
       return user if user.email.downcase == email.downcase
