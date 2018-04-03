@@ -25,5 +25,8 @@ Tested on:
 * Redis 3.2.1 (everything is namespaced in encrypt namespace so it probably won't hinder your environment)
 * Standard SQLite adapter
 
+Usage:
+
+There is a seeds.rb file so you can do rails db:seed to have two standard types of user consents, this is enough to complete registration. 
 
 If you need a more detailed description then visit https://blog.vraith.com for details
