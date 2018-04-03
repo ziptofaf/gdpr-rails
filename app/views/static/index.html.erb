@@ -1,2 +1,9 @@
-<h1>Static#index</h1>
-<p>Find me in app/views/static/index.html.erb</p>
+<h1>GDPR Hello World</h1>
+<p>Hello, I am a simple application that should be compliant with GDPR!</p>
+
+<% if current_user %>
+<p> <%= button_to 'Click here to logout', destroy_user_session_path, method: :delete %>  </p>
+<% else %>
+<p>Click <%= link_to 'here', new_user_registration_path %> to register or to log-in </p>
+
+<% end %>

@@ -19,13 +19,13 @@ module Encryptable
       @encryption_key = namespaced_redis.get(key)
       return @encryption_key
     else
-      raise ArgumentError('You need to override an encryption_key method - no
-        direct connection to user_id')
+      raise 'You need to override an encryption_key method - no
+        direct connection to user_id'
     end
   end
 
   def create_encryption_key #we might only need this in our User model but it's still part of our encryptable library
-    @encryption_key || SecureRandom.random_bytes(32)
+    SecureRandom.random_bytes(32)
   end
 
   #attr_encrypted requires encrypted_fieldname_iv to exist in the database. This method will automatically populate all of them
@@ -48,7 +48,7 @@ module Encryptable
       key = self.id.to_s
     end
     #just to stay on safe side
-    raise RuntimeError('Encryption key already exists') if namespaced_redis.get(key)
+    raise 'Encryption key already exists' if namespaced_redis.get(key)
     namespaced_redis.set(key, @encryption_key)
   end
 
@@ -59,7 +59,7 @@ module Encryptable
 
   #we need to override attr_encrypted method so rather than throwing an exception
   #it will return a correct value when no key exists
-  #you can also consider overriding encrypt in a similar fashion
+  #you can also consider overriding encrypt in a similar fashion (although for me it makes sense that no key = you cant edit whats inside)
   def decrypt(attribute, encrypted_value)
     begin
       encrypted_attributes[attribute.to_sym][:operation] = :decrypting
@@ -69,7 +69,5 @@ module Encryptable
       return self.value_when_no_key
     end
   end
-
-
 
 end

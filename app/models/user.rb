@@ -38,10 +38,6 @@ class User < ApplicationRecord
     encrypted_email_changed?
   end
 
-  def self.find_for_authentication(tainted_conditions)
-    User.find_by_email(tainted_conditions[:email].downcase)
-  end
-
   def downcase_email
     self.email = self.email.downcase
   end
@@ -75,7 +71,7 @@ class User < ApplicationRecord
     records.reject{|u| self.persisted? && u.id == self.id}.empty?
   end
   #unfortunately, this is an O(n) operation now that has to go through ALL the users to see if an email is unique. Sorry!
-  #if you need it to ne O(1) then consider using email_hash field instead
+  #if you need it to ne O(1) then consider adding email_hash field instead
   def self.find_by_email(email)
     users = User.all
     users.each do |user|
