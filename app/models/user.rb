@@ -5,7 +5,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable
 
-  before_validation :populate_iv_fields, :downcase_email
+  before_validation :downcase_email #, :populate_iv_fields #if you need/want iv to change more often
   before_create :create_encryption_key
   after_create :save_encryption_key
   after_create :build_user_consents
@@ -31,6 +31,15 @@ class User < ApplicationRecord
     true
   end
 
+  #helper method if you are creating a user from console and want them to have all consents set
+  def fill_consents
+    hash = Hash.new
+    ConsentCategory.all.map(&:id).each do |id|
+      hash[id]='on'
+    end
+    self.registration_consents=hash
+  end
+
   #unfortunately not having an email field that you can just "write to" breaks
   #Devise. Below some necessary workarounds
 
@@ -43,8 +52,6 @@ class User < ApplicationRecord
   end
 
   def registration_consents=(consents)
-    p "hello"
-    p consents
     @consents = consents
   end
 
@@ -97,6 +104,7 @@ class User < ApplicationRecord
   end
 
   def validate_consents_completeness
+    return if self.id #we assume that already created user has all consents
     errors.add(:registration_consents, 'You need to agree to all required terms to continue') and return unless registration_consents
     consents = ConsentCategory.where(mandatory: true).map(&:id)
     ids = registration_consents.keys #we are relying on a fact that checkboxes that are not checked are not sent to Rails back-end at all

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180403175338) do
+ActiveRecord::Schema.define(version: 20180403194359) do
 
   create_table "consent_categories", force: :cascade do |t|
     t.string "name"
@@ -26,6 +26,18 @@ ActiveRecord::Schema.define(version: 20180403175338) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["consent_category_id"], name: "index_consents_on_consent_category_id"
+  end
+
+  create_table "mock_orders", force: :cascade do |t|
+    t.string "encrypted_name"
+    t.string "encrypted_name_iv"
+    t.string "encrypted_address"
+    t.string "encrypted_address_iv"
+    t.integer "user_id"
+    t.decimal "price", precision: 5, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_mock_orders_on_user_id"
   end
 
   create_table "user_consents", force: :cascade do |t|

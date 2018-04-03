@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  encrypted_name: MyString
+  encrypted_name_iv: MyString
+  encrypted_address: MyString
+  encrypted_address_iv: MyString
+  user: one
+  price: 9.99
+
+two:
+  encrypted_name: MyString
+  encrypted_name_iv: MyString
+  encrypted_address: MyString
+  encrypted_address_iv: MyString
+  user: two
+  price: 9.99

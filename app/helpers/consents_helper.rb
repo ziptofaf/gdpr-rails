@@ -5,7 +5,7 @@ module ConsentsHelper
       id = consent_type[:id]
       desc = consent_type[:short_description]
       mandatory = consent_type[:mandatory] ? '(required)' : ''
-      checkbox = "<input type='checkbox' name='user[registration_consents][#{id}]'> #{desc} #{mandatory}"
+      checkbox = "<input type='checkbox' name='user[registration_consents][#{id}]'> #{desc} #{mandatory}<br/>"
       checkboxes.push(checkbox)
     end
     return checkboxes
