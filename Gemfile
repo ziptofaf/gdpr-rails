@@ -7,7 +7,7 @@ end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.5'
+gem 'rails', '~> 5.1.6'
 gem 'devise' #we will use this for authentication/authorization
 gem 'attr_encrypted' #and this we will use for per field encryption
 # Use sqlite3 as the database for Active Record

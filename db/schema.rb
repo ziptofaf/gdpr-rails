@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180402174744) do
+ActiveRecord::Schema.define(version: 20180403175338) do
 
   create_table "consent_categories", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "mandatory", default: true
+    t.text "shortened_description"
   end
 
   create_table "consents", force: :cascade do |t|
