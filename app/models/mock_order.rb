@@ -3,4 +3,8 @@ class MockOrder < ApplicationRecord
   include Encryptable
   belongs_to :user
   attr_encrypted :name, :address, key: :encryption_key
+
+  def self.can_expire?
+    true
+  end
 end
