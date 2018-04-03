@@ -11,4 +11,9 @@ class MockOrder < ApplicationRecord
   def self.has_personal_information?
     true
   end
+
+  def self.export_personal_information_from_model(user_id)
+    return MockOrder.find_by(user_id: user_id).to_json
+  end
+
 end
