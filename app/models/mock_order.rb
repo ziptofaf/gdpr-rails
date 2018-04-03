@@ -7,4 +7,8 @@ class MockOrder < ApplicationRecord
   def self.can_expire?
     true
   end
+
+  def self.has_personal_information?
+    true
+  end
 end
