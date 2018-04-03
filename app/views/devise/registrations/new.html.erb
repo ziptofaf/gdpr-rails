@@ -26,6 +26,10 @@
     <%= f.password_field :password_confirmation, autocomplete: "off" %>
   </div>
 
+  <% consents_checkboxes.each do |checkbox| %>
+  <%= checkbox.html_safe %>
+  <% end %>
+
   <div class="actions">
     <%= f.submit "Sign up" %>
   </div>

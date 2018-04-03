@@ -8,6 +8,7 @@ class User < ApplicationRecord
   before_validation :populate_iv_fields, :downcase_email
   before_create :create_encryption_key
   after_create :save_encryption_key
+  after_create :build_user_consents
   attr_encrypted :email, key: :encryption_key
   has_many :user_consents
 
@@ -16,7 +17,6 @@ class User < ApplicationRecord
     return nil unless User.exists?(user_id)
     descendants = ApplicationRecord.descendants.reject{|model| !model.has_personal_information?}
     result = Hash.new
-    p descendants
     descendants.each do |descendant|
       result[descendant.name] = descendant.export_personal_information_from_model(user_id)
     end
@@ -42,7 +42,17 @@ class User < ApplicationRecord
     self.email = self.email.downcase
   end
 
+  def registration_consents=(consents)
+    p "hello"
+    p consents
+    @consents = consents
+  end
 
+  def registration_consents
+    @consents
+  end
+
+  validate                  :validate_consents_completeness
   validates_presence_of     :email, if: :email_required?
   validates_uniqueness_of   :username, allow_blank: false, if: :username_changed?
   validates_length_of       :username, within: 6..20, allow_blank: true
@@ -84,6 +94,29 @@ class User < ApplicationRecord
 
   def validate_email_uniqueness
     errors.add(:email, :taken) unless email_unique?
+  end
+
+  def validate_consents_completeness
+    errors.add(:registration_consents, 'You need to agree to all required terms to continue') and return unless registration_consents
+    consents = ConsentCategory.where(mandatory: true).map(&:id)
+    ids = registration_consents.keys #we are relying on a fact that checkboxes that are not checked are not sent to Rails back-end at all
+    consents.each do |consent_type|
+      errors.add(:registration_consents, 'You need to agree to all required terms to continue') and return unless ids.include?(consent_type.to_s)
+    end
+  end
+
+  def build_user_consents
+    ids = registration_consents.keys
+    categories = ConsentCategory.where(id: ids)
+    raise 'User submitted list of consents includes objects not existing in the database!' if categories.count != ids.count
+    categories.each do |category|
+      consent = UserConsent.new
+      consent.consent_category = category
+      consent.user = self
+      consent.requires_revalidation = false
+      consent.agreed_at = self.created_at
+      consent.save!
+    end
   end
 
 end

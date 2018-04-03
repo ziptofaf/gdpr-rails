@@ -16,7 +16,8 @@ class Consent < ApplicationRecord
       elem = Hash.new
       elem[:name] = category.name
       elem[:short_description] = category.shortened_description
-      elem[:mandatory] = category.shortened_description
+      elem[:mandatory] = category.mandatory
+      elem[:id] = category.id
       current_version = Consent.where(consent_category: category).order(created_at: :desc).first
       elem[:last_changed] = current_version.created_at
       elem[:description] = current_version.description
