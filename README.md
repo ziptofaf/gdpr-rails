@@ -1,24 +1,29 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+So this is an example of an application that adheres to GDPR regulations (aka EU wide fundamental changes to how personally identifiable information is stored).
+A lot of people seem to consider it really hard whereas in practice it's really not that bad and hopefully this small project helps you solve some problems.  
 
-Things you may want to cover:
+Points covered:
 
-* Ruby version
+* Per row encryption for personally identifiable information (also helps with right to be forgotten, it's just a matter of removing your encryption_key for a given user now)
+* Retention policy
+* Separate types of user consents
 
-* System dependencies
+Points partially covered:
 
-* Configuration
+* Your ToS/consents types changing (all model requirements are in here, it's just a matter of adding a redirect after user logs in with a form to fill)
+* Log cleansing - slightly modified config/initializers/filter_parameter_logging.rb
 
-* Database creation
+Points not covered:
 
-* Database initialization
+* auditing - no admin panel built in to show this kind of functionality but you can get really far by adding audited gem anyway
+* testing - will probably add some if I see anyone interested in using this app for something
 
-* How to run the test suite
+Tested on:
 
-* Services (job queues, cache servers, search engines, etc.)
+* Ruby 2.5.0
+* Redis 3.2.1 (everything is namespaced in encrypt namespace so it probably won't hinder your environment)
+* Standard SQLite adapter
 
-* Deployment instructions
 
-* ...
+If you need a more detailed description then visit https://blog.vraith.com for details
