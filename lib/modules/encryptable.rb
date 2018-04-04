@@ -1,8 +1,12 @@
 module Encryptable
 
+  def redis_connection
+    redis = Redis.new
+    Redis::Namespace.new(:encrypt, :redis => redis)
+  end
+
   def encryption_key
-    redis_connection = Redis.new
-    namespaced_redis = Redis::Namespace.new(:encrypt, :redis => redis_connection)
+    namespaced_redis = self.redis_connection
     if self.class.name == 'User'
       if self.id
         key = self.id.to_s
@@ -25,7 +29,8 @@ module Encryptable
   end
 
   def create_encryption_key #we might only need this in our User model but it's still part of our encryptable library
-    SecureRandom.random_bytes(32)
+    Rails.application.secrets.partial_encryption_key + SecureRandom.random_bytes(28)
+    #we take 4 bytes of our encryption_key from application secrets file wuth remaining 28 to be stored inside Redis
   end
 
   #attr_encrypted requires encrypted_fieldname_iv to exist in the database. This method will automatically populate all of them
@@ -40,8 +45,7 @@ module Encryptable
   end
   #this saves our encryption key in Redis so it's persistent
   def save_encryption_key
-    redis_connection = Redis.new
-    namespaced_redis = Redis::Namespace.new(:encrypt, :redis => redis_connection)
+    namespaced_redis = self.redis_connection
     if defined?(self.user_id)
       key = self.user_id.to_s
     else
