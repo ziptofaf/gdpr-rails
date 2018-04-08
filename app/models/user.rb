@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   before_validation :downcase_email #, :populate_iv_fields #if you need/want iv to change more often
   before_create :create_encryption_key
+  before_save :hash_email
   after_create :save_encryption_key
   after_create :build_user_consents
   attr_encrypted :email, key: :encryption_key
@@ -47,6 +48,10 @@ class User < ApplicationRecord
     encrypted_email_changed?
   end
 
+  def email_was
+    User.decrypt_email(encrypted_email_was)
+  end
+
   def downcase_email
     self.email = self.email.downcase
   end
@@ -84,20 +89,29 @@ class User < ApplicationRecord
   end
 
   def email_unique?
-    records = Array(self.class.find_by_email(self.email))
-    records.reject{|u| self.persisted? && u.id == self.id}.empty?
+    email_hash =  User.create_email_hash(self.email)
+    return !User.exists?(email_hash: email_hash)
   end
-  #unfortunately, this is an O(n) operation now that has to go through ALL the users to see if an email is unique. Sorry!
-  #if you need it to ne O(1) then consider adding email_hash field instead
+
+  def self.find_for_authentication(tainted_conditions)
+    User.find_by(email_hash: User.create_email_hash(tainted_conditions[:email]))
+  end
+
+  def hash_email
+    self.email_hash =  User.create_email_hash(self.email)
+  end
+
+  #by creating an email_hash field we can make this function work in O(1) once more!
   def self.find_by_email(email)
-    users = User.all
-    users.each do |user|
-      return user if user.email.downcase == email.downcase
-    end
-    return nil
+    email_hash = User.create_email_hash(email.downcase)
+    User.find_by email_hash: email_hash
   end
 
   protected
+  #emails are unlike passwords, theres no real point in hashing them 50000 times and then salting
+  def self.create_email_hash(email)
+    return Digest::SHA256.hexdigest(email)
+  end
 
   def validate_email_uniqueness
     errors.add(:email, :taken) unless email_unique?
