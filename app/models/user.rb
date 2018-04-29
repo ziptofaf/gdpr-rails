@@ -93,7 +93,7 @@ class User < ApplicationRecord
     if self.new_record?
       return !User.exists?(email_hash: email_hash)
     else
-      return (User.where('email_hash = ? AND id != ?', email_hash, self.id).count == 0)
+      return User.where(email_hash: email_hash).where.not(id: self.id).count == 0
     end
   end
 
