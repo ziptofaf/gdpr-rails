@@ -90,11 +90,7 @@ class User < ApplicationRecord
 
   def email_unique?
     email_hash =  User.create_email_hash(self.email)
-    if self.new_record?
-      return !User.exists?(email_hash: email_hash)
-    else
-      return User.where(email_hash: email_hash).where.not(id: self.id).count == 0
-    end
+    return User.where(email_hash: email_hash).where.not(id: self.id).count == 0
   end
 
   def self.find_for_authentication(tainted_conditions)
