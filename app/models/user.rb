@@ -96,7 +96,7 @@ class User < ApplicationRecord
   def self.find_for_authentication(tainted_conditions)
     User.find_by(email_hash: User.create_email_hash(tainted_conditions[:email]))
   end
-  #used when you try to use forgot_password form. This is imperfect as it ignores opts arguments but better than nothing
+  #used when you try to use forgot_password form. This is imperfect but better than nothing
   #a correct solution would probably be to use Arel and create a custom :email field mapped to :email_hash below ActiveRecord layer
   #but unfortunately I frankly am not sure how to do it
   def self.find_first_by_auth_conditions(tainted_conditions, opts={})
