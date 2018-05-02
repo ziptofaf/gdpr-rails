@@ -96,9 +96,22 @@ class User < ApplicationRecord
   def self.find_for_authentication(tainted_conditions)
     User.find_by(email_hash: User.create_email_hash(tainted_conditions[:email]))
   end
+  #used when you try to use forgot_password form. This is imperfect as it ignores opts arguments but better than nothing
+  #a correct solution would probably be to use Arel and create a custom :email field mapped to :email_hash below ActiveRecord layer
+  #but unfortunately I frankly am not sure how to do it
+  def self.find_first_by_auth_conditions(tainted_conditions, opts={})
+    if tainted_conditions['email']
+      tainted_conditions['email_hash'] = User.create_email_hash(tainted_conditions[:email])
+      tainted_conditions.reject! {|k| k == 'email'}
+    end
+    to_adapter.find_first(devise_parameter_filter.filter(tainted_conditions).merge(opts))
+  end
+
 
   def hash_email
-    self.email_hash =  User.create_email_hash(self.email)
+    if self.encrypted_email_changed?
+      self.email_hash =  User.create_email_hash(self.email)
+    end
   end
 
   #by creating an email_hash field we can make this function work in O(1) once more!
