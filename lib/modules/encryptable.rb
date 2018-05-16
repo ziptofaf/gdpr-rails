@@ -56,6 +56,16 @@ module Encryptable
     namespaced_redis.set(key, @encryption_key)
   end
 
+  def delete_encryption_key
+    namespaced_redis = self.redis_connection
+    if defined?(self.user_id)
+      key = self.user_id.to_s
+    else
+      key = self.id.to_s
+    end
+    namespaced_redis.del(key)
+  end
+
   #what do return in attribute field when there's no key
   def value_when_no_key
     '[deleted]'
