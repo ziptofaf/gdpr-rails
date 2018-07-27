@@ -10,7 +10,7 @@ module Encryptable
     if self.class.name == 'User'
       if self.id
         key = self.id.to_s
-        @encryption_key = namespaced_redis.get(key)
+        @encryption_key = Rails.application.secrets.partial_encryption_key + namespaced_redis.get(key)
         return @encryption_key
       else #for new records
         @encryption_key ||= self.create_encryption_key
@@ -20,17 +20,17 @@ module Encryptable
     if (defined?(self.user_id))
       key = self.user_id.to_s
       raise ArgumentError('Invalid user_id') unless key.length > 0
-      @encryption_key = namespaced_redis.get(key)
+      @encryption_key = Rails.application.secrets.partial_encryption_key + namespaced_redis.get(key)
       return @encryption_key
     else
-      raise 'You need to override an encryption_key method - no
-        direct connection to user_id'
+      raise 'You need to override an encryption_key method or add user_id - no
+        direct connection to user_id needed to locate an encryption key'
     end
   end
 
   def create_encryption_key #we might only need this in our User model but it's still part of our encryptable library
     Rails.application.secrets.partial_encryption_key + SecureRandom.random_bytes(28)
-    #we take 4 bytes of our encryption_key from application secrets file wuth remaining 28 to be stored inside Redis
+    #we take 4 bytes of our encryption_key from application secrets file with remaining 28 to be stored inside Redis
   end
 
   #attr_encrypted requires encrypted_fieldname_iv to exist in the database. This method will automatically populate all of them
@@ -53,7 +53,7 @@ module Encryptable
     end
     #just to stay on safe side
     raise 'Encryption key already exists' if namespaced_redis.get(key)
-    namespaced_redis.set(key, @encryption_key)
+    namespaced_redis.set(key, @encryption_key[4..-1]) #needed cuz otherwise our encryption key would have Rails secrets
   end
 
   def delete_encryption_key
