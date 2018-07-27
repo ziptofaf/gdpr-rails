@@ -10,7 +10,7 @@ module Encryptable
     if self.class.name == 'User'
       if self.id
         key = self.id.to_s
-        @encryption_key = namespaced_redis.get(key)
+        @encryption_key = Rails.application.secrets.partial_encryption_key + namespaced_redis.get(key).to_s
         return @encryption_key
       else #for new records
         @encryption_key ||= self.create_encryption_key
@@ -20,7 +20,7 @@ module Encryptable
     if (defined?(self.user_id))
       key = self.user_id.to_s
       raise ArgumentError('Invalid user_id') unless key.length > 0
-      @encryption_key = namespaced_redis.get(key)
+      @encryption_key = Rails.application.secrets.partial_encryption_key + namespaced_redis.get(key).to_s
       return @encryption_key
     else
       raise 'You need to override an encryption_key method - no
