@@ -1,3 +1,7 @@
+# BREAKING CHANGES
+
+## NOTE (27.07.2018 ) - there was an error in the system of storing encryption keys - instead of 28 bytes inside redis and 4 inside secrets.yml it was all stored inside redis. You can use `rake updater:fix_redis_keys` to ensure your user's data is still accessible after this update (it will remove excessive information from your redis database for existing users)
+
 # README
 
 So this is an example of an application that adheres to GDPR regulations (aka EU wide fundamental changes to how personally identifiable information is stored).
@@ -27,6 +31,6 @@ Tested on:
 
 Usage:
 
-There is a seeds.rb file so you can do rails db:seed to have two standard types of user consents, this is enough to complete registration. 
+There is a seeds.rb file so you can do rails db:seed to have two standard types of user consents, this is enough to complete registration.
 
 If you need a more detailed description then visit https://blog.vraith.com for details
