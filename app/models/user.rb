@@ -105,11 +105,11 @@ class User < ApplicationRecord
 
   def validate_consents_completeness
     return if self.id #we assume that already created user has all consents
-    errors.add(:registration_consents, 'You need to agree to all required terms to continue') and return unless registration_consents
+    errors.add(:registration_consents, 'You need to agree to all required terms to continue') and return unless self.registration_consents
     consents = ConsentCategory.where(mandatory: true).map(&:id)
-    ids = registration_consents.keys #we are relying on a fact that checkboxes that are not checked are not sent to Rails back-end at all
+    ids = self.registration_consents.keys.map(&:to_i) #we are relying on a fact that checkboxes that are not checked are not sent to Rails back-end at all
     consents.each do |consent_type|
-      errors.add(:registration_consents, 'You need to agree to all required terms to continue') and return unless ids.include?(consent_type.to_s)
+      errors.add(:registration_consents, 'You need to agree to all required terms to continue') and return unless ids.include?(consent_type)
     end
   end
 
