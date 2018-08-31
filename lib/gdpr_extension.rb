@@ -13,14 +13,16 @@ extend ActiveSupport::Concern
     def can_expire?
       false
     end
-
+    #records that are safe to delete by now
     def outdated_records
       if self.can_expire?
-        return self.where('DATETIME(created_at, \'+? seconds\') < ?', self.retention_period, Time.now)
+        arel_table = self.arel_table
+        return self.where(arel_table[:created_at].lt(Time.now - self.retention_period))
       else
         return self.none #this way we can safely call this method but it won't delete anything
       end
     end
+    #its here just to remind you that a model with has_personal_information HAS to define this method
     def export_personal_information_from_model(user_id)
       raise 'method export_personal_information_from_model not defined'
     end
