@@ -8,6 +8,6 @@ module ConsentsHelper
       checkbox = "<input type='checkbox' name='user[registration_consents][#{id}]'> #{desc} #{mandatory}<br/>"
       checkboxes.push(checkbox)
     end
-    return checkboxes
+    checkboxes
   end
 end

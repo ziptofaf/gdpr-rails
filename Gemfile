@@ -7,9 +7,9 @@ end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.6'
-gem 'devise' #we will use this for authentication/authorization
-gem 'attr_encrypted' #and this we will use for per field encryption
+gem 'rails', '~> 5.2.2'
+gem 'devise' # we will use this for authentication/authorization
+gem 'attr_encrypted' # and this we will use for per field encryption
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use Puma as the app server
@@ -42,7 +42,10 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 2.13'
+  gem 'factory_bot_rails'
+  gem 'rspec-rails', '~> 3.8'
   gem 'selenium-webdriver'
+
 end
 
 group :development do

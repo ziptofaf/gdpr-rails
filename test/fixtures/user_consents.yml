@@ -1,9 +1,0 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  consent_category: one
-  agreed_at: 2018-04-01 10:22:42
-
-two:
-  consent_category: two
-  agreed_at: 2018-04-01 10:22:42
