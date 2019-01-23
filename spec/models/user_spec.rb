@@ -27,17 +27,6 @@ describe User do
     expect(user.id.nil?).to eq(true)
   end
 
-
-  context 'accessing users'
-  it 'can be accessed in full if encryption key is present' do
-    FactoryBot.create(:consent)
-    user = build_user
-    user.fill_consents
-    user.save
-    reloaded = User.first
-    expect(reloaded.email).to eq('sample2@example.com')
-  end
-
   context 'accessing users'
   it 'can be accessed in full if encryption key is present' do
     FactoryBot.create(:consent)
