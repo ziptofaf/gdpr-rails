@@ -1,6 +1,9 @@
 # BREAKING CHANGES
 
-## NOTE (27.07.2018 ) - there was an error in the system of storing encryption keys - instead of 28 bytes inside redis and 4 inside secrets.yml it was all stored inside redis. You can use `rake updater:fix_redis_keys` to ensure your user's data is still accessible after this update (it will remove excessive information from your redis database for existing users)
+## (2019-01-23) - if you used SQLite for a database then you will want to use updater:fix_represent_boolean_as_integer rake to fix a deprecation. secrets.yml is no longer stored in repo as well so make sure to backup it!
+## (2018-07-27) - there was an error in the system of storing encryption keys - instead of 28 bytes inside redis and 4 inside secrets.yml it was all stored inside redis. You can use `rake updater:fix_redis_keys` to ensure your user's data is still accessible after this update (it will remove excessive information from your redis database for existing users)
+
+
 
 # README
 
@@ -32,5 +35,7 @@ Tested on:
 Usage:
 
 There is a seeds.rb file so you can do rails db:seed to have two standard types of user consents, this is enough to complete registration.
+
+You will also need to prepare a secrets.yml file in config (you can start with secrets.yml.example to see what needs to be set)
 
 If you need a more detailed description then visit https://blog.vraith.com for details

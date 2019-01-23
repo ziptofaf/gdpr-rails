@@ -13,7 +13,7 @@ class User < ApplicationRecord
   attr_encrypted :email, key: :encryption_key
   has_many :user_consents
 
-  #entry point for exporting user's personal information
+  # entry point for exporting user's personal information
   def self.export_personal_information(user_id)
     return nil unless User.exists?(user_id)
     descendants = ApplicationRecord.descendants.reject{|model| !model.has_personal_information?}
@@ -23,26 +23,26 @@ class User < ApplicationRecord
     end
     return result
   end
-  #simplest example, we just export to json
+  # simplest example, we just export to json
   def self.export_personal_information_from_model(user_id)
     return User.find(user_id).to_json
   end
-  #overwrite this to true for methods that you will want to be included in export_personal_information
+  # overwrite this to true for methods that you will want to be included in export_personal_information
   def self.has_personal_information?
     true
   end
 
-  #helper method if you are creating a user from console and want them to have all consents set
+  # helper method if you are creating a user from console and want them to have all consents set
   def fill_consents
     hash = Hash.new
     ConsentCategory.all.map(&:id).each do |id|
-      hash[id]='on'
+      hash[id] = 'on'
     end
-    self.registration_consents=hash
+    self.registration_consents = hash
   end
 
-  #unfortunately not having an email field that you can just "write to" breaks
-  #Devise. Below some necessary workarounds
+  # unfortunately not having an email field that you can just "write to" breaks
+  # Devise. Below some necessary workarounds
 
   def email_changed?
     encrypted_email_changed?
@@ -53,7 +53,12 @@ class User < ApplicationRecord
   end
 
   def downcase_email
-    self.email = self.email.downcase
+    # FactoryBot struggles with virtual AND encrypted fields, it can't quite seem to fill them properly when
+    # building. This lets you create user using this, you will
+    # however need to manually change email when creating more and not rely on FactoryBot
+    self.email = FactoryBot.attributes_for(:user)[:email] if Rails.env.test? and email.nil?
+
+    self.email = email.downcase
   end
 
   def registration_consents=(consents)
@@ -96,9 +101,10 @@ class User < ApplicationRecord
   def self.find_for_authentication(tainted_conditions)
     User.find_by(email_hash: User.create_email_hash(tainted_conditions[:email]))
   end
-  #used when you try to use forgot_password form. This is imperfect but better than nothing
-  #a correct solution would probably be to use Arel and create a custom :email field mapped to :email_hash below ActiveRecord layer
-  #but unfortunately I frankly am not sure how to do it
+
+  # used when you try to use forgot_password form. This is imperfect but better than nothing
+  # a correct solution would probably be to use Arel and create a custom :email field mapped to :email_hash below ActiveRecord layer
+  # but unfortunately I frankly am not sure how to do it
   def self.find_first_by_auth_conditions(tainted_conditions, opts={})
     if tainted_conditions['email']
       tainted_conditions['email_hash'] = User.create_email_hash(tainted_conditions[:email])
@@ -114,14 +120,14 @@ class User < ApplicationRecord
     end
   end
 
-  #by creating an email_hash field we can make this function work in O(1) once more!
+  # by creating an email_hash field we can make this function work in O(1) once more!
   def self.find_by_email(email)
     email_hash = User.create_email_hash(email.downcase)
     User.find_by email_hash: email_hash
   end
 
   protected
-  #emails are unlike passwords, theres no real point in hashing them 50000 times and then salting
+  # emails are unlike passwords, theres no real point in hashing them 50000 times and then salting
   def self.create_email_hash(email)
     return Digest::SHA256.hexdigest(email)
   end

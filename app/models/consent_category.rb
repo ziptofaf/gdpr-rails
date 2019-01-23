@@ -1,3 +1,4 @@
+# a general consent category, it can have multiple Consent models (versions of when your ToS change)
 class ConsentCategory < ApplicationRecord
   has_many :consents
   has_many :user_consents
@@ -16,13 +17,12 @@ class ConsentCategory < ApplicationRecord
     end
   end
 
-  private
-
   def self.build_for_user(user, consent_category)
     consent = UserConsent.new
     consent.user = user
     consent.consent_category = consent_category
-    #we set this to true inside consent which includes description and version, not just consent_category
+    # we only set this to true inside consent
+    # which includes description and version, not just general category as that's incomplete by itself
     consent.requires_revalidation = false
     consent.save!
   end
