@@ -11,7 +11,7 @@ gem 'rails', '~> 5.2.2'
 gem 'devise' # we will use this for authentication/authorization
 gem 'attr_encrypted' # and this we will use for per field encryption
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+gem 'sqlite3', '~> 1.3.6'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Use SCSS for stylesheets
